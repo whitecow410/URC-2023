@@ -1,20 +1,20 @@
 from pyatcrobo2.parts import Servomotor, IRPhotoReflector, DCMotor
 from pystubit.board import button_a, display, Image
-
 import time
 
-ir = IRPhotoReflector("P0")
-ir2 = IRPhotoReflector('P1')
+ir = IRPhotoReflector("P1")
+ir2 = IRPhotoReflector('P0')
 
 m1 = DCMotor("M1")
 m2 = DCMotor("M2")
 m1.brake()
 m2.brake()
 
-servoM_a = Servomotor("P16")
-servoM_b = Servomotor("P15")
+servoM_a = Servomotor("P15")
+servoM_b = Servomotor("P14")
+servoM_c = Servomotor("P13")
 
-fast = 120
+fast = 100
 slow = 50
 
 m1.power(fast)
@@ -23,15 +23,26 @@ m2.power(fast)
 threshold = []
 
 times = 0
-l = r = 0
+t = 0
+x = y = 0
+event = None
+fix = False
 
-def servoMA(angle = 100):
-    servoM_a.set_angle(angle)
-    return angles
+class event:
+    move = None
+    turn = None
 
-def servoMB(angle = 100):
-    servoM_b.set_angle(angle)
-    return angle
+class motor:
+    def servoMA(angle = 90):
+        servoM_a.set_angle(angle)
+
+    def servoMB(angleb = 30, anglec = 150):
+        servoM_b.set_angle(angleb)
+        servoM_c.set_angle(anglec)
+
+    def set_speed(speed):
+        m1.power(speed)
+        m2.power(speed)
 
 class move:
     def stop():
@@ -39,55 +50,69 @@ class move:
         m2.brake()
 
     def forward():
+        global event
         display.show("F", delay = 0)
-        m1.ccw()
-        m2.ccw()
-
-    def backward():
-        display.show("B", delay = 0)
         m1.cw()
         m2.cw()
+        event.move = lambda: move.forward
 
-    def left(sleep=None):
+    class backward():
+        global event
+        def __init__(self):
+            display.show("B", delay = 0)
+            m1.ccw()
+            m2.ccw()
+            event.move = lambda: move.backward
+
+        def fix():
+            move.forward()
+            time.sleep(0.3)
+            motor.set_speed(slow)
+            move.right(0.3) if event.turn() is move.left else move.left(0.3)
+            motor.set_speed(fast)
+            move.backward()
+
+    def left(sleep=0):
         display.show("L", delay = 0)
         m1.cw()
         m2.ccw()
-        time.sleep(sleep if sleep or sleep == 0 else l)
+        time.sleep(sleep)
 
-    def right(sleep=None):
+    def right(sleep=0):
         display.show("R", delay = 0)
         m1.ccw()
         m2.cw()
-        time.sleep(sleep if sleep or sleep == 0 else r)
+        time.sleep(sleep)
 
-def grab():
-    servoMA(angle=100)
-    time.sleep(1.5)
-    servoMA()
-    time.sleep(1.5)
-    servoMB(angle=140)
+def pick():
+    motor.servoMB(0, 180)
+    time.sleep(1)
+    motor.servoMA(130)
 
 def drop():
-    for i in range(140, 100, -10):
-        servoM_a.set_angle(i)
+    if y != 2:
+        for i in range(130, 105, -18):
+            motor.servoMA(i)
+            time.sleep(0.5)
+    motor.servoMB()
 
 def setup():
-    global threshold, l, r
-    servoMA()
-    servoMB()
+    global threshold, t
+    motor.servoMA()
+    motor.servoMB()
     m1.brake()
     m2.brake()
 
     data = []
+    s = 0
     for i in range(2):
+        while button_a.is_pressed():
+            pass
         display.show("W" if i == 0 else "B", delay = 0)
         while not button_a.is_pressed():
             pass
         s = 2
-        while s > 0:
-            value = [ir.get_value(), ir2.get_value()]
-            s -= 1
-            time.sleep(0.75)
+        value = [ir.get_value(), ir2.get_value()]
         print(value)
         data += value
     threshold.append(
@@ -99,29 +124,18 @@ def setup():
     print(threshold)
     while button_a.is_pressed():
         pass
-    for i in range(2):
-        if i == 0:
-            display.show("L", delay = 0)
-            turn = lambda: move.left()
-        else:
-            display.show("R", delay = 0)
-            turn = lambda: move.right()
-        while button_a.is_pressed():
-            pass
-        while not button_a.is_pressed():
-            pass
-        turn()
-        while button_a.is_pressed():
-            pass
-        while not button_a.is_pressed():
-            s += 1
-            time.sleep(0.1)
-        move.stop()
-        if i == 0:
-            l = s/10
-        else:   
-            r = s/10
-    print(l, r)
+    display.show("T", delay = 0)
+    while not button_a.is_pressed():
+        pass
+    while button_a.is_pressed():
+        pass
+    move.left()
+    while not button_a.is_pressed():
+        s += 1
+        time.sleep(0.1)
+    move.stop()
+    t = s/10
+    print(t)
     while button_a.is_pressed():
         pass
     display.show("G", delay = 0)
@@ -129,18 +143,63 @@ def setup():
         pass
 
 def square():
-    global times
+    global times, x, y
     if times >= 0 and times < 2:
-        move.forward()
-        time.sleep(0.5)
+        event.move()()
         times += 1
+        time.sleep(0.5)
     elif times >= 2:
-        move.forward()
-        time.sleep(0.3)
-        move.left()
-        times = 1
+        if x == 0:
+            move.backward()
+            time.sleep(0.5)
+            move.stop()
+            pick()
+            move.backward()
+            times = 1
+            x += 1
+            time.sleep(0.5)
+        elif x == 1:
+            move.forward()
+            time.sleep(1)
+            move.left(t)
+            x += 1 if y != 1 else 3
+            time.sleep(0.5)
+        elif x == 2:
+            event.move()()
+            time.sleep(1)
+            move.right(t)
+            x += 1
+            time.sleep(0.5)
+        elif x == 3:
+            drop()
+            move.backward()
+            time.sleep(1)
+            y = x = 1
+        elif x == 4:
+            motor.servoMB()
+            move.forward()
+            x += 1
+        elif x == 5:
+            motor.servoMB(0, 180)
+            time.sleep(0.5)
+            motor.servoMB()
+            move.backward()
+            time.sleep(1)
+            move.stop()
+            pick()
+            move.backward()
+            y = x = 2
+
+
+
+    # elif times >= 2:
+    #     move.forward()
+    #     time.sleep(0.5)``
+    #     move.left(l)
+    #     times = 1
 
 def tracking():
+    global event, fix
     if ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
         image = Image('00000:01100:01010:00110:00000')
         image.set_base_color((0, 31, 31))
@@ -149,12 +208,25 @@ def tracking():
         time.sleep(0.5)
         square()
     elif ir.get_value() < threshold[0] and ir2.get_value() > threshold[1]:
-        move.left(0)
+        motor.set_speed(slow)
+        move.left()
+        motor.set_speed(fast)
+        event.turn = lambda: move.left
+        # fix = True if event.move() is move.backward else False
     elif ir.get_value() > threshold[0] and ir2.get_value() < threshold[1]:
-        move.right(0)
+        motor.set_speed(slow)
+        move.right()
+        motor.set_speed(fast)
+        event.turn = lambda: move.right
+        # fix = True if event.move() is move.backward else False
     else:
-        move.forward()
+        # if fix:
+        #     move.backward.fix()
+        #     fix = False
+        event.move()()
 
+# if __name__ == "__main__":
 setup()
+move.forward()
 while True:
     tracking()
