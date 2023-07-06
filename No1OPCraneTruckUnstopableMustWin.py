@@ -11,8 +11,8 @@ m1.brake()
 m2.brake()
 
 servoM_a = Servomotor("P15")
-servoM_b = Servomotor("P14")
-servoM_c = Servomotor("P13")
+servoM_b = Servomotor("P13")
+servoM_c = Servomotor("P14")
 
 fast = 100
 slow = 50
@@ -33,7 +33,7 @@ class motor:
     def servoMA(angle = 90):
         servoM_a.set_angle(angle)
 
-    def servoMB(angleb = 30, anglec = 150):
+    def servoMB(angleb = 150, anglec = 110):
         servoM_b.set_angle(angleb)
         servoM_c.set_angle(anglec)
 
@@ -59,30 +59,36 @@ class move:
         m1.ccw()
         m2.ccw()
 
-    def left(sleep=0):
-        display.show("L", delay = 0)
-        event.turn = lambda: move.left
-        m1.cw()
-        m2.ccw()
-        time.sleep(sleep)
+    def left(auto=False):
+        if not auto:
+            display.show("L", delay = 0)
+            event.turn = lambda: move.left
+            m1.cw()
+            m2.ccw()
+        else:
+            while ir.get_value() > threshold[0]:
+                move.left()
 
-    def right(sleep=0):
-        display.show("R", delay = 0)
-        event.turn = lambda: move.right
-        m1.ccw()
-        m2.cw()
-        time.sleep(sleep)
+    def right(auto = False):
+        if not auto:
+            display.show("R", delay = 0)
+            event.turn = lambda: move.right
+            m1.ccw()
+            m2.cw()
+        else:
+            while ir2.get_value() > threshold[1]:
+                move.right()
 
-def pick():
-    motor.servoMB(0, 180)
+def pick(a = 108):
+    motor.servoMB(180, 80)
     time.sleep(1)
-    motor.servoMA(130)
+    motor.servoMA(a)
 
 def drop():
-    if y != 1:
-        for i in range(130, 105, -18):
-            motor.servoMA(i)
-            time.sleep(0.5)
+    # if y != 1:
+    #     for i in range(130, 105, -18):
+    #         motor.servoMA(i)
+    #         time.sleep(0.5)
     motor.servoMB()
 
 def fix():
@@ -134,13 +140,11 @@ def square():
         time.sleep(0.5)
     elif times >= 2:
         if x == 0:
-            time.sleep(0.5)
             move.stop()
             pick()
             move.backward()
             time.sleep(0.5)
-            while ir.get_value() > threshold[0]:
-                move.left()
+            move.right(auto=True)
             move.stop()
             fix()
             move.forward()
@@ -150,8 +154,7 @@ def square():
         elif x == 1:
             move.forward()
             time.sleep(1)
-            while ir2.get_value() > threshold[1]:
-                move.right()
+            move.right(auto=True)
             move.stop()
             fix()
             event.move()()
@@ -160,25 +163,21 @@ def square():
         elif x == 2:
             event.move()()
             time.sleep(1)
-            while ir2.get_value() > threshold[1]:
-                move.right()
+            move.right(auto=True)
             move.stop()
             fix()
             event.move()()
             x += 1
             time.sleep(0.5)
         elif x == 3:
-            move.backward()
-            time.sleep(1)
-            move.stop()
             drop()
             move.backward()
-            x += 1 if y != 0 else 4
+            time.sleep(1)
+            x += 1 if y == 0 else 4
         elif x == 4:
             move.forward()
             time.sleep(1)
-            while ir.get_value() > threshold[0]:
-                move.left()
+            move.left(auto=True)
             move.stop()
             fix()
             motor.servoMB()
@@ -187,11 +186,10 @@ def square():
             motor.servoMA()
             x += 1
         elif x == 5:
-            pick()
+            pick(130)
             move.backward()
             time.sleep(0.5)
-            while ir.get_value() > threshold[0]:
-                move.left()
+            move.left(auto=True)
             move.stop()
             fix()
             move.forward()
@@ -200,15 +198,16 @@ def square():
         elif x == 6:
             move.forward()
             time.sleep(0.5)
-            while ir.get_value() > threshold[0]:
-                move.left()
+            move.left(auto=True)
             move.stop()
             fix()
             event.move()()
             time.sleep(0.5)
             x, y = 3, 1
         elif x == 7:
-            return move.stop()
+            while True:
+                move.stop()
+                display.scroll('GG WIN!')
 
     # elif times >= 2:
     #     move.forward()
