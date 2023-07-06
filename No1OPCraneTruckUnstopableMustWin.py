@@ -23,10 +23,7 @@ m2.power(fast)
 threshold = []
 
 times = 0
-t = 0
 x = y = 0
-event = None
-fix = False
 
 class event:
     move = None
@@ -45,41 +42,33 @@ class motor:
         m2.power(speed)
 
 class move:
+    global event
     def stop():
         m1.brake()
         m2.brake()
 
     def forward():
-        global event
         display.show("F", delay = 0)
+        event.move = lambda: move.forward
         m1.cw()
         m2.cw()
-        event.move = lambda: move.forward
 
-    class backward():
-        global event
-        def __init__(self):
-            display.show("B", delay = 0)
-            m1.ccw()
-            m2.ccw()
-            event.move = lambda: move.backward
-
-        def fix():
-            move.forward()
-            time.sleep(0.3)
-            motor.set_speed(slow)
-            move.right(0.3) if event.turn() is move.left else move.left(0.3)
-            motor.set_speed(fast)
-            move.backward()
+    def backward():
+        display.show("B", delay = 0)
+        event.move = lambda: move.backward
+        m1.ccw()
+        m2.ccw()
 
     def left(sleep=0):
         display.show("L", delay = 0)
+        event.turn = lambda: move.left
         m1.cw()
         m2.ccw()
         time.sleep(sleep)
 
     def right(sleep=0):
         display.show("R", delay = 0)
+        event.turn = lambda: move.right
         m1.ccw()
         m2.cw()
         time.sleep(sleep)
@@ -90,11 +79,22 @@ def pick():
     motor.servoMA(130)
 
 def drop():
-    if y != 2:
+    if y != 1:
         for i in range(130, 105, -18):
             motor.servoMA(i)
             time.sleep(0.5)
     motor.servoMB()
+
+def fix():
+    motor.set_speed(slow)
+    while ir.get_value() < threshold[0] or ir2.get_value() < threshold[1]:
+        if ir.get_value() < threshold[0] and ir2.get_value() > threshold[1]:
+            move.left()
+        elif ir.get_value() > threshold[0] and ir2.get_value() < threshold[1]:
+            move.right()
+        else:
+            break
+    motor.set_speed(fast)
 
 def setup():
     global threshold, t
@@ -104,14 +104,12 @@ def setup():
     m2.brake()
 
     data = []
-    s = 0
     for i in range(2):
         while button_a.is_pressed():
             pass
         display.show("W" if i == 0 else "B", delay = 0)
         while not button_a.is_pressed():
             pass
-        s = 2
         value = [ir.get_value(), ir2.get_value()]
         print(value)
         data += value
@@ -122,20 +120,6 @@ def setup():
         int((data[1] + data[3]) /2)
     )
     print(threshold)
-    while button_a.is_pressed():
-        pass
-    display.show("T", delay = 0)
-    while not button_a.is_pressed():
-        pass
-    while button_a.is_pressed():
-        pass
-    move.left()
-    while not button_a.is_pressed():
-        s += 1
-        time.sleep(0.1)
-    move.stop()
-    t = s/10
-    print(t)
     while button_a.is_pressed():
         pass
     display.show("G", delay = 0)
@@ -150,51 +134,85 @@ def square():
         time.sleep(0.5)
     elif times >= 2:
         if x == 0:
-            move.backward()
             time.sleep(0.5)
             move.stop()
             pick()
             move.backward()
+            time.sleep(0.5)
+            while ir.get_value() > threshold[0]:
+                move.left()
+            move.stop()
+            fix()
+            move.forward()
             times = 1
             x += 1
             time.sleep(0.5)
         elif x == 1:
             move.forward()
             time.sleep(1)
-            move.left(t)
-            x += 1 if y != 1 else 3
+            while ir2.get_value() > threshold[1]:
+                move.right()
+            move.stop()
+            fix()
+            event.move()()
+            x += 1
             time.sleep(0.5)
         elif x == 2:
             event.move()()
             time.sleep(1)
-            move.right(t)
+            while ir2.get_value() > threshold[1]:
+                move.right()
+            move.stop()
+            fix()
+            event.move()()
             x += 1
             time.sleep(0.5)
         elif x == 3:
-            drop()
-            move.backward()
-            time.sleep(1)
-            y = x = 1
-        elif x == 4:
-            motor.servoMB()
-            move.forward()
-            x += 1
-        elif x == 5:
-            motor.servoMB(0, 180)
-            time.sleep(0.5)
-            motor.servoMB()
             move.backward()
             time.sleep(1)
             move.stop()
+            drop()
+            move.backward()
+            x += 1 if y != 0 else 4
+        elif x == 4:
+            move.forward()
+            time.sleep(1)
+            while ir.get_value() > threshold[0]:
+                move.left()
+            move.stop()
+            fix()
+            motor.servoMB()
+            move.forward()
+            time.sleep(0.5)
+            motor.servoMA()
+            x += 1
+        elif x == 5:
             pick()
             move.backward()
-            y = x = 2
-
-
+            time.sleep(0.5)
+            while ir.get_value() > threshold[0]:
+                move.left()
+            move.stop()
+            fix()
+            move.forward()
+            time.sleep(0.5)
+            x += 1
+        elif x == 6:
+            move.forward()
+            time.sleep(0.5)
+            while ir.get_value() > threshold[0]:
+                move.left()
+            move.stop()
+            fix()
+            event.move()()
+            time.sleep(0.5)
+            x, y = 3, 1
+        elif x == 7:
+            return move.stop()
 
     # elif times >= 2:
     #     move.forward()
-    #     time.sleep(0.5)``
+    #     time.sleep(0.5)
     #     move.left(l)
     #     times = 1
 
@@ -207,22 +225,8 @@ def tracking():
         move.stop()
         time.sleep(0.5)
         square()
-    elif ir.get_value() < threshold[0] and ir2.get_value() > threshold[1]:
-        motor.set_speed(slow)
-        move.left()
-        motor.set_speed(fast)
-        event.turn = lambda: move.left
-        # fix = True if event.move() is move.backward else False
-    elif ir.get_value() > threshold[0] and ir2.get_value() < threshold[1]:
-        motor.set_speed(slow)
-        move.right()
-        motor.set_speed(fast)
-        event.turn = lambda: move.right
-        # fix = True if event.move() is move.backward else False
     else:
-        # if fix:
-        #     move.backward.fix()
-        #     fix = False
+        fix()
         event.move()()
 
 # if __name__ == "__main__":
