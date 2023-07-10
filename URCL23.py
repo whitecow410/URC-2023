@@ -14,7 +14,7 @@ servoM_a = Servomotor("P15")
 servoM_b = Servomotor("P13")
 servoM_c = Servomotor("P14")
 
-fast = 100
+fast = 140
 slow = 50
 
 m1.power(fast)
@@ -52,19 +52,16 @@ class move:
         m2.brake()
 
     def forward():
-        display.show("F", delay=0)
         event.move = lambda: move.forward
         m1.cw()
         m2.cw()
 
     def backward():
-        display.show("B", delay=0)
         event.move = lambda: move.backward
         m1.ccw()
         m2.ccw()
 
     def left(auto=False):
-        display.show("L", delay=0)
         event.turn = lambda: move.left
         if not auto:
             m1.cw()
@@ -76,7 +73,6 @@ class move:
                 move.left()
 
     def right(auto=False):
-        display.show("R", delay=0)
         event.turn = lambda: move.right
         if not auto:
             m1.ccw()
@@ -88,18 +84,17 @@ class move:
                 move.right()
 
 
-def pick(a=90):
-    motor.servoMB(100, 80)
+def pick(a=90, b=100, c=80):
+    motor.servoMB(b, c)
     time.sleep(1)
     motor.servoMA(a)
 
 
 def drop():
-    # if y != 1:
-    #     for i in range(130, 105, -18):
-    #         motor.servoMA(i)
-    #         time.sleep(0.5)
-    motor.servoMB()
+    motor.servoMA(118) if y == 1 else None
+    time.sleep(0.5) if y == 1 else None
+    motor.servoMB() if y == 0 else motor.servoMB(85, 80)
+    motor.servoMA() if y != 1 else None
 
 
 def fix():
@@ -143,6 +138,7 @@ def setup():
     display.show("G", delay=0)
     while not button_a.is_pressed():
         pass
+    display.clear()
 
 
 def square():
@@ -153,12 +149,13 @@ def square():
         time.sleep(0.5)
     elif times >= 2:
         if x == 0:
+            move.stop()
             motor.servoMA(80)
-            pick()
+            pick(100)
             motor.servoMA(100)
             motor.set_speed(200)
             while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
-                move.backward()
+                event.move()()
             move.stop()
             motor.set_speed(fast)
             move.right(auto=True)
@@ -166,11 +163,11 @@ def square():
             fix()
             motor.servoMA(90)
             move.forward()
-            time.sleep(0.5)
             times = x = 1
         elif x == 1:
-            move.forward()
             time.sleep(1)
+            while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
+                event.move()()
             move.right(auto=True)
             move.stop()
             fix()
@@ -178,8 +175,9 @@ def square():
             time.sleep(0.5)
             x += 1
         elif x == 2:
-            event.move()()
             time.sleep(1)
+            while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
+                event.move()()
             move.right(auto=True) if y == 0 else move.left(auto=True)
             move.stop()
             fix()
@@ -187,13 +185,19 @@ def square():
             time.sleep(0.5)
             x += 1
         elif x == 3:
+            move.backward() if y == 1 else None
+            time.sleep(0.3) if y == 1 else None
+            move.stop()
+            time.sleep(0.5)
             drop()
             move.backward()
-            time.sleep(1)
+            time.sleep(0.5)
             x += 1 if y == 0 else 3
         elif x == 4:
             move.forward()
             time.sleep(1)
+            while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
+                event.move()()
             move.left(auto=True)
             move.stop()
             fix()
@@ -203,19 +207,20 @@ def square():
             time.sleep(0.5)
             x += 1
         elif x == 5:
-            pick(130)
+            move.stop()
+            pick(145, 105, 75)
             move.backward()
             time.sleep(0.5)
+            while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
+                event.move()()
             move.left(auto=True)
             move.stop()
             fix()
             move.forward()
-            time.sleep(0.5)
             x, y = 2, 1
         elif x == 6:
             while True:
                 move.stop()
-                display.scroll('GG!')
 
     # elif times >= 2:
     #     move.forward()
@@ -227,11 +232,6 @@ def square():
 def tracking():
     global event, fix
     if ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
-        image = Image('00000:01100:01010:00110:00000')
-        image.set_base_color((0, 31, 31))
-        display.show(image, delay=0)
-        move.stop()
-        time.sleep(0.5)
         square()
     else:
         fix()
