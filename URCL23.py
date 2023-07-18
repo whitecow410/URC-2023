@@ -154,6 +154,7 @@ def square():
             pick(100)
             motor.servoMA(100)
             motor.set_speed(200)
+            move.backward()
             while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
                 event.move()()
             move.stop()
@@ -161,7 +162,6 @@ def square():
             move.right(auto=True)
             move.stop()
             fix()
-            motor.servoMA(90)
             move.forward()
             times = x = 1
         elif x == 1:
@@ -178,7 +178,13 @@ def square():
             time.sleep(1)
             while ir.get_value() < threshold[0] and ir2.get_value() < threshold[1]:
                 event.move()()
-            move.right(auto=True) if y == 0 else move.left(auto=True)
+            if y == 0:
+                move.right()
+                time.sleep(1)
+                while ir.get_value() > threshold[0]:
+                    move.right()
+            else:
+                move.left(auto=True)
             move.stop()
             fix()
             event.move()()
@@ -220,6 +226,7 @@ def square():
             x, y = 2, 1
         elif x == 6:
             while True:
+                display.show("E", delay=0)
                 move.stop()
 
     # elif times >= 2:
