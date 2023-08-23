@@ -15,13 +15,13 @@ servoM_a = Servomotor("P15")
 servoM_b = Servomotor("P13")
 servoM_c = Servomotor("P14")
 
-fast = 128
+fast = 120
 slow = 50
 
 m1.power(fast)
 m2.power(fast)
 
-threshold = []  # 1653, 2066
+threshold = [1700, 2000]  # 1700, 2000
 
 times = 0
 x = y = z = 0
@@ -63,17 +63,17 @@ class move:
         m2.brake()
 
     def forward():
-        event.move = lambda: move.forward()
+        event.move = lambda: move.forward
         m1.cw()
         m2.cw()
 
     def backward():
-        event.move = lambda: move.backward()
+        event.move = lambda: move.backward
         m1.ccw()
         m2.ccw()
 
     def left(auto=False):
-        event.turn = lambda: move.left()
+        event.turn = lambda: move.left
         if not auto:
             m1.cw()
             m2.ccw()
@@ -85,7 +85,7 @@ class move:
             move.stop()
 
     def right(auto=False):
-        event.turn = lambda: move.right()
+        event.turn = lambda: move.right
         if not auto:
             m1.ccw()
             m2.cw()
@@ -115,7 +115,7 @@ def drop(a=None):
 
 def fix():
     # motor.set_speed(slow)
-    while ir.get_value() < threshold[0] or ir2.get_value() < threshold[1]:
+    while (ir.get_value() < threshold[0] or ir2.get_value() < threshold[1]) and event.move != move.backward:
         if ir.get_value() < threshold[0] and ir2.get_value() > threshold[1]:
             move.left()
         elif ir.get_value() > threshold[0] and ir2.get_value() < threshold[1]:
@@ -164,36 +164,39 @@ def tracking():
     else:
         if x == 0:
             time.sleep(0.1)
+            motor.servoMA(145)
             move.backward()
+            time.sleep(1)
+            move.left(auto=True)
+            fix()
+            move.backward()
+            time.sleep(0.5)
+            move.forward()
             x += 1
         elif x == 1:
-            move.backward()
-            while detect('black'):
-                pass
-            time.sleep(0.35)
-            fix()
-            move.right(auto=True)
-            fix()
+            time.sleep(2.5)
+            move.left()
+            time.sleep(1.3)
             move.forward()
-            time.
+            time.sleep(0.5)
+            while detect('white'):
+                pass
+            time.sleep(0.5)
+            move.left(auto=True)
+            motor.set_speed(fast)
+            fix()
             x += 1
         elif x == 2:
+            move.backward()
+            while ir3.get_value() > 1800:
+                pass
             move.stop()
-            motor.servoMB(100, 80)
-            if ir3.get_value() > 900 and ir3.get_value() < 1300:
-                pick()
-            else:
-                time.sleep(0.2)
-                motor.servoMB()
-                while True:
-                    if ir3.get_value() > 950 and ir3.get_value() < 1300:
-                        move.stop()
-                        pick()
-                        break
-                    elif ir3.get_value() > 1300:
-                        move.backward()
-                    else:
-                        move.forward()
+            pick()
+            time.sleep(0.3)
+            move.forward()
+            while detect('white'):
+                pass
+            time.sleep(0.35)
             fix()
             move.left(auto=True)
             fix()
@@ -242,23 +245,6 @@ def tracking():
             x += 1
             times = 0
         elif x == 7:
-            # while detect('black'):
-            #     pass
-            # time.sleep(0.5)
-            # move.right(auto=True) if z == 0 else move.left(auto=True)
-            # fix()
-            # y += 1
-            # if y >= 2:
-            #     time.sleep(1)
-            #     move.stop()
-            #     drop()
-            #     time.sleep(0.3)
-            #     move.backward()
-            #     if z == 0:
-            #         z += 1
-            #         x = 5
-            #     else:
-            #         time.sleep(100)
             time.sleep(2.5)
             move.right() if z == 0 else move.left()
             time.sleep(1.3)
@@ -276,12 +262,12 @@ def tracking():
             if z == 0:
                 time.sleep(0.35)
                 move.stop()
-                while l > 85:
+                while l > 80:
                     l -= 5
                     motor.servoMA(l)
                     time.sleep(0.3)
                 move.stop()
-                motor.servoMB(75, 95)
+                motor.servoMB(88, 92)
                 motor.servoMA(90)
                 move.forward()
                 time.sleep(1.6)
@@ -312,65 +298,17 @@ def tracking():
             else:
                 x += 1
         elif x == 9:
-            move.forward()
-            while detect('black'):
-                pass
-            time.sleep(0.35)
-            fix()
-            move.right(auto=True) if y < 1 else move.left(auto=True)
-            y += 1
-            if y >= 2:
-                y = 0
-                times = 0
-                x += 1
-        elif x == 10:
-            l = 145
-            sg = [100, 80]
-            move.forward()
-            while detect('black'):
-                pass
-            time.sleep(0.35)
-            fix()
-            move.left(auto=True)
-            fix()
-            move.forward()
-            while ir3.get_value() < 1300:
-                pass
-            pick()
             move.stop()
-            pick(145)
-            move.forward()
-            while detect('black'):
-                pass
-            time.sleep(0.35)
-            fix()
-            move.left(auto=True)
-            fix()
-            move.backward()
-            while detect('white'):
-                pass
-            while l > 120:
-                l -= 5
-                motor.servoMA(l)
+            motor.servoMA(90)
+            for i in range(12):
+                motor.servoMB(100, 80)
                 time.sleep(0.3)
-            while sg[0] > 85 and sg[1] < 95:
-                sg[0] -= 2
-                sg[1] += 2
-                motor.servoMB(sg[0], sg[1])
+                motor.servoMB()
                 time.sleep(0.3)
             time.sleep(1000)
-        # elif x == 9:
-        #     move.stop()
-        #     motor.servoMA(90)
-        #     for i in range(12):
-        #         motor.servoMB(100, 80)
-        #         time.sleep(0.3)
-        #         motor.servoMB()
-        #         time.sleep(0.3)
-        #     time.sleep(100)
 
     fix()
-    event.move()
+    event.move()()
     while detect('black'):
         pass
 
@@ -383,4 +321,4 @@ while True:
         tracking()
     else:
         fix()
-        event.move()
+        event.move()()
