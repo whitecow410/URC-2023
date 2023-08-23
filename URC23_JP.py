@@ -57,7 +57,7 @@ def detect(color=""):
     # 檢查2個紅外線感應器是否皆為白色
     elif color.lower() == "white":
         return True if ir.get_value() > threshold[0] and ir2.get_value() > threshold[1] else False
-    # 返回目前開紅外線感應器所檢測到的顏色
+    # 返回目前紅外線感應器所檢測到的顏色
     else:
         return "white" if ir.get_value() > threshold[0] and ir2.get_value() > threshold[1] else "black"
 
@@ -78,13 +78,13 @@ class move:
 
     # 向後
     def backward():
-        event.move = lambda: move.backward
+        event.move = lambda: move.backward  # <- lambda 可以將一個function以變數形式儲存
         m1.ccw()
         m2.ccw()
 
     # 轉左
     def left(auto=False):
-        event.turn = lambda: move.left
+        event.turn = lambda: move.left  # <- lambda 可以將一個function以變數形式儲存
         if not auto:
             m1.cw()
             m2.ccw()
@@ -98,11 +98,12 @@ class move:
 
     # 轉右
     def right(auto=False):
-        event.turn = lambda: move.right
+        event.turn = lambda: move.right  # <- lambda 可以將一個function以變數形式儲存
         if not auto:
             m1.ccw()
             m2.cw()
         else:
+            # 自動檢測
             move.right()
             time.sleep(1)
             while ir2.get_value() > threshold[1]:
@@ -176,9 +177,8 @@ def setup():
         pass
     display.clear()
 
+
 # 懶得解釋.... XD 總之就係沿住路線工作
-
-
 def tracking():
     global times, x, y, z, a
     if times < 1:
@@ -331,7 +331,7 @@ def tracking():
 
     fix()
     event.move()()
-    while detect('black'):
+    while detect('black'):  # <- 防止在同一個黑色線上觸發多次, 當車子已經觸發上述功能後將會在此階段無限重複直至車子離開黑色線
         pass
 
 
