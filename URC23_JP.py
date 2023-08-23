@@ -1,6 +1,17 @@
+# 載入模組
 from pyatcrobo2.parts import Servomotor, IRPhotoReflector, DCMotor
 from pystubit.board import button_a, display, Image
 import time
+
+# 功能設置 / 定義
+threshold = [1700, 2000]  # 1700, 2000
+
+fast = 120
+slow = 50
+
+times = 0
+x = y = z = 0
+a = b = 0
 
 ir = IRPhotoReflector("P1")
 ir2 = IRPhotoReflector('P0')
@@ -15,25 +26,18 @@ servoM_a = Servomotor("P15")
 servoM_b = Servomotor("P13")
 servoM_c = Servomotor("P14")
 
-fast = 120
-slow = 50
-
 m1.power(fast)
 m2.power(fast)
 
-threshold = [1700, 2000]  # 1700, 2000
 
-times = 0
-x = y = z = 0
-a = b = 0
-
-
+# 記錄最後行動
 class event:
     move = None
     turn = None
 
 
 class motor:
+    # 設置 Motor
     def servoMA(angle=90):
         servoM_a.set_angle(angle)
 
@@ -47,10 +51,13 @@ class motor:
 
 
 def detect(color=""):
+    # 檢查2個紅外線感應器是否皆為黑色
     if color.lower() == "black":
         return True if ir.get_value() < threshold[0] and ir2.get_value() < threshold[1] else False
+    # 檢查2個紅外線感應器是否皆為白色
     elif color.lower() == "white":
         return True if ir.get_value() > threshold[0] and ir2.get_value() > threshold[1] else False
+    # 返回目前開紅外線感應器所檢測到的顏色
     else:
         return "white" if ir.get_value() > threshold[0] and ir2.get_value() > threshold[1] else "black"
 
@@ -58,32 +65,38 @@ def detect(color=""):
 class move:
     global event
 
+    # 停止
     def stop():
         m1.brake()
         m2.brake()
 
+    # 向前
     def forward():
-        event.move = lambda: move.forward
+        event.move = lambda: move.forward  # <- lambda 可以將一個function以變數形式儲存
         m1.cw()
         m2.cw()
 
+    # 向後
     def backward():
         event.move = lambda: move.backward
         m1.ccw()
         m2.ccw()
 
+    # 轉左
     def left(auto=False):
         event.turn = lambda: move.left
         if not auto:
             m1.cw()
             m2.ccw()
         else:
+            # 自動檢測
             move.left()
             time.sleep(1)
             while ir.get_value() > threshold[0]:
                 move.left()
             move.stop()
 
+    # 轉右
     def right(auto=False):
         event.turn = lambda: move.right
         if not auto:
@@ -97,6 +110,7 @@ class move:
             move.stop()
 
 
+# 抓實貨物
 def pick(a=110, b=98, c=82):  # 55 115
     motor.servoMA(80)
     time.sleep(0.3)
@@ -105,6 +119,7 @@ def pick(a=110, b=98, c=82):  # 55 115
     motor.servoMA(a)
 
 
+# 放開貨物
 def drop(a=None):
     if a:
         motor.servoMA(a)
@@ -113,25 +128,29 @@ def drop(a=None):
     motor.servoMA()
 
 
+# 自動修正路線
 def fix():
-    # motor.set_speed(slow)
     while (ir.get_value() < threshold[0] or ir2.get_value() < threshold[1]) and event.move != move.backward:
+        # <- 如果左邊的紅外線感應器檢測到黑色, 自動向左修正
         if ir.get_value() < threshold[0] and ir2.get_value() > threshold[1]:
             move.left()
+        # <- 如果右邊的紅外線感應器檢測到黑色, 自動向右修正
         elif ir.get_value() > threshold[0] and ir2.get_value() < threshold[1]:
             move.right()
         else:
             break
-    # smotor.set_speed(fast)
 
 
+# 預備啟動
 def setup():
+    # 初始化階段
     global threshold, t
     motor.servoMA()
     motor.servoMB()
     m1.brake()
     m2.brake()
     if not threshold:
+        # 掃描白值和黑值之間的數值
         data = []
         for i in range(2):
             while button_a.is_pressed():
@@ -151,10 +170,13 @@ def setup():
         print(threshold)
         while button_a.is_pressed():
             pass
+    # 當按下按鈕 A 時啓動
     display.show("G", delay=0)
     while not button_a.is_pressed():
         pass
     display.clear()
+
+# 懶得解釋.... XD 總之就係沿住路線工作
 
 
 def tracking():
@@ -317,8 +339,8 @@ def tracking():
 setup()
 move.forward()
 while True:
-    if detect('black'):
-        tracking()
+    if detect('black'):  # <- 當檢測到兩邊黑色時皆為十字路口
+        tracking()  # 當上述條件觸發事, 執行工作
     else:
-        fix()
-        event.move()()
+        fix()  # 自動修復路線
+        event.move()()  # 根據上一次移動的方向繼續移動 ( if 機器人上一次移動是向前的話, 這次一樣會向前)
