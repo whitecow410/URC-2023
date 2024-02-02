@@ -18,14 +18,14 @@ slow = 50
 threshold = 1760
 x = 0
 
-# ColorMap = {
-#         'white': [range(58, 63), range(68, 73), range(39, 44)],
-#         'black': [range(44, 49), range(35, 40), range(22, 27)],
-#         'red': [range(57, 62), range(48, 53), range(5, 10)],
-#         'yellow': [range(55, 60), range(51, 56), range(6, 11)],
-#         'bule': [range(50, 55), range(71, 76), range(81, 85)],
-#         'pruple': [range(28, 33), range(14, 19), range(12, 17)]
-#     }
+ColorMap = {
+    'white': [range(58, 63), range(68, 73), range(39, 44)],
+    'black': [range(44, 49), range(35, 40), range(22, 27)],
+    'red': [range(57, 62), range(48, 53), range(5, 10)],
+    'yellow': [range(55, 60), range(51, 56), range(6, 11)],
+    'bule': [range(50, 55), range(71, 76), range(81, 85)],
+    'pruple': [range(28, 33), range(14, 19), range(12, 17)]
+}
 
 # for _color in ColorMap:
 #     ColorMap[_color] = [tuple(i) for i in ColorMap[_color]]
@@ -36,10 +36,12 @@ x = 0
 #     'blue': 7,
 #     'purple': 1
 # }
+
+
 class setSeed:
     def forward():
         return 100, 100
-    
+
     def backward():
         return 100, 100
 
@@ -48,6 +50,7 @@ class motor:
     def set_speed(speed):
         m1.power(speed)
         m2.power(speed)
+
 
 class move:
     def stop():
@@ -89,13 +92,14 @@ def setup():
         print(threshold)
         while button_a.is_pressed():
             pass
-    
+
     # Run
     motor.set_speed(fast)
     display.show("G", delay=0)
     while not button_a.is_pressed():
         pass
     display.clear()
+
 
 def cross_line():
     move.forward()
@@ -104,6 +108,7 @@ def cross_line():
         move.left()
     while ir.get_value() < threshold:
         pass
+
 
 def tracking():
     global x
@@ -124,8 +129,6 @@ def tracking():
     while ir.get_value() < threshold:
         pass
     x += 1
-    
-
 
 
 # if __name__ == "__main__":
