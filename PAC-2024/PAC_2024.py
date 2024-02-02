@@ -1,4 +1,4 @@
-from pyatcrobo2.parts import DCMotor, IRPhotoReflector, ColorSensor, UltrasonicSensor
+from pyatcrobo2.parts import DCMotor, IRPhotoReflector, ColorSensor
 from pystubit.board import button_a, button_b, display, Image
 import time
 
@@ -9,7 +9,6 @@ m2.brake()
 
 ir = IRPhotoReflector('P0')
 colorSen = ColorSensor('I2C')
-# us = UltrasonicSensor('P1')
 
 threshold = 1760
 x = 0
@@ -72,7 +71,7 @@ def setup():
     global threshold
     move.stop()
 
-    # threhold
+    # get threhold
     if not threshold:
         value = []
         for i in range(2):
@@ -123,7 +122,6 @@ def tracking():
     x += 1
 
 
-# if __name__ == "__main__":
 setup()
 move.forward()
 while True:
