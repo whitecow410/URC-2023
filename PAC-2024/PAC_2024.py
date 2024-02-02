@@ -117,6 +117,10 @@ def tracking():
         move.forward()
     elif x > 3:
         move.stop()
+        for x in range(5):
+            for y in range(5):
+                display.set_pixel(x, y, (31, 31, 31))
+                time.sleep(0.5)
     while ir.get_value() < threshold and colorSen.get_values in ColorMap['black']:
         pass
     x += 1
