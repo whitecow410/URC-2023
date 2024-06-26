@@ -27,11 +27,11 @@ class CarMotor:
 
     def forward(self) -> None:
         self.motor.power(self.power)
-        self.motor.cw()
+        self.motor.ccw()
 
     def backward(self) -> None:
         self.motor.power(self.power)
-        self.motor.ccw()
+        self.motor.cw()
 
     def stop(self):
         self.motor.brake()
