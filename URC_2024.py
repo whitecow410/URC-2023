@@ -2,6 +2,7 @@ from pyatcrobo2.parts import Servomotor, IRPhotoReflector, DCMotor
 from pystubit.board import button_a, display
 import time
 
+
 class IRSensor:
     def __init__(self, port, threshold=2000) -> None:
         self.sensor = IRPhotoReflector(port)
@@ -16,6 +17,7 @@ class IRSensor:
     def is_black(self) -> bool:
         value = self.get_value()
         return True if value < self.thresgold else False
+
 
 class CarMotor:
     def __init__(self, port, power=100) -> None:
@@ -36,12 +38,14 @@ class CarMotor:
     def stop(self):
         self.motor.brake()
 
+
 class ServoMotor:
     def __init__(self, port) -> None:
         self.servo = Servomotor(port)
 
     def set_angle(self, angle) -> None:
         self.servo.set_angle(angle)
+
 
 ir_left = IRSensor('P0')
 ir_right = IRSensor('P1')
@@ -54,29 +58,36 @@ servo1 = ServoMotor('P15')
 servo2 = ServoMotor('P13')
 servo3 = ServoMotor('P14')
 
+
 def set_power(left, right):
     motor_left.set_power(left)
     motor_right.set_power(right)
+
 
 def move_forward():
     motor_left.forward()
     motor_right.forward()
 
+
 def move_backward():
     motor_left.backward()
     motor_right.backward()
+
 
 def turn_left():
     motor_right.forward()
     motor_left.backward()
 
+
 def turn_right():
     motor_left.forward()
     motor_right.backward()
 
+
 def stop():
     motor_left.stop()
     motor_right.stop()
+
 
 def auto_left():
     turn_left()
@@ -86,6 +97,7 @@ def auto_left():
         pass
     stop()
 
+
 def auto_right():
     turn_right()
     while ir_left.is_black():
@@ -94,17 +106,19 @@ def auto_right():
         pass
     stop()
 
-def pick(left=0, right=0):
+
+def pick(left=180, right=180):
     servo2.set_angle(left)
     servo3.set_angle(right)
+
 
 def drop(left=0, right=0):
     servo2.set_angle(left)
     servo3.set_angle(right)
 
+
 def set_hight(hight):
     servo1.set_angle(hight)
-
 
 
 def fix():
@@ -115,6 +129,25 @@ def fix():
             turn_right()
         else:
             break
+
+
+def forward_line(move, times):
+    for _ in range(times):
+        move()
+        while not ir_left.is_black() and not ir_right.is_black():
+            fix()
+            move()
+    stop()
+
+
+def square():
+    forward_line(move_forward, 3)
+    auto_left()
+    while True:
+        move_forward()
+        forward_line(move_forward, 2)
+        auto_left()
+
 
 def setup(threshold='auto'):
     temp = []
@@ -148,5 +181,6 @@ def setup(threshold='auto'):
     while not button_a.is_pressed():
         pass
     display.clear()
+
 
 setup()
