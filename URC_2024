@@ -1,0 +1,155 @@
+from pyatcrobo2.parts import Servomotor, IRPhotoReflector, DCMotor
+from pystubit.board import button_a, display
+import time
+
+class IRSensor:
+    def __init__(self, port, threshold=2000) -> None:
+        self.sensor = IRPhotoReflector(port)
+        self.threshold = threshold
+
+    def get_value(self) -> int:
+        return self.sensor.get_vlaue()
+    
+    def set_threshold(self, threshold) -> None:
+        self.threshold = threshold
+    
+    def is_black(self) -> bool:
+        value = self.get_value()
+        return True if value < self.thresgold else False
+
+class CarMotor:
+    def __init__(self, port, power=100) -> None:
+        self.motor = DCMotor(port)
+        self.power = power
+
+    def set_power(self, power) -> None:
+        self.power = power
+    
+    def forward(self) -> None:
+        self.motor.power(self.power)
+        self.motor.cw()
+
+    def backward(self) -> None:
+        self.motor.power(self.power)
+        self.motor.ccw()
+
+    def stop(self):
+        self.motor.brake()
+
+class ServoMotor:
+    def __init__(self, port) -> None:
+        self.servo = Servomotor(port)
+
+    def set_angle(self, angle) -> None:
+        self.servo.set_angle(angle)
+
+ir_left = IRSensor('P0')
+ir_right = IRSensor('P1')
+ir_center = IRSensor('P2')
+
+motor_left = CarMotor('M1')
+motor_right = CarMotor('M2')
+
+servo1 = ServoMotor('P15')
+servo2 = ServoMotor('P13')
+servo3 = ServoMotor('P14')
+
+def set_power(left, right):
+    motor_left.set_power(left)
+    motor_right.set_power(right)
+
+def move_forward():
+    motor_left.forward()
+    motor_right.forward()
+
+def move_backward():
+    motor_left.backward()
+    motor_right.backward()
+
+def turn_left():
+    motor_right.forward()
+    motor_left.backward()
+
+def turn_right():
+    motor_left.forward()
+    motor_right.backward()
+
+def stop():
+    motor_left.stop()
+    motor_right.stop()
+
+def auto_left():
+    turn_left()
+    while ir_right.is_black():
+        pass
+    while not ir_right.is_black:
+        pass
+    stop()
+
+def auto_right():
+    turn_right()
+    while ir_left.is_black():
+        pass
+    while not ir_left.is_black:
+        pass
+    stop()
+
+def pick(left=0, right=0):
+    servo2.set_angle(left)
+    servo3.set_angle(right)
+
+def drop(left=0, right=0):
+    servo2.set_angle(left)
+    servo3.set_angle(right)
+
+def set_hight(hight):
+    servo1.set_angle(hight)
+
+
+
+def fix():
+    while ir_left.is_black() or ir_right.is_balck():
+        if ir_left.is_black() and not ir_right.is_black():
+            turn_left()
+        elif ir_right.is_black() and not ir_left.is_black():
+            turn_right()
+        else:
+            break
+
+def setup(threshold='auto'):
+    temp = []
+    if not threshold:
+        for i in range(2):
+            while button_a.is_pressed():
+                pass
+            display.show("W" if i == 0 else "B", delay=0)
+            while not button_a.is_pressed():
+                pass
+            temp += [ir_left.get_value(), ir_right.get_value()]
+        while button_a.is_pressed():
+            pass
+        ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
+        ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
+    elif threshold == 'auto':
+        temp += [ir_left.get_value(), ir_right.get_value()]
+        for ir in [ir_left, ir_right]:
+            if ir.is_black():
+                move_forward()
+                while not ir.is_black():
+                    pass
+                while ir.is_black():
+                    pass
+                stop()
+            temp += [ir.get_value()]
+            ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
+            ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
+    elif isinstance(threshold, list):
+        ir_left.set_threshold(threshold[0])
+        ir_right.set_threshold(threshold[1])
+    display.show("G", delay=0)
+    while not button_a.is_pressed():
+        pass
+    display.clear()
+
+setup()
+move_forward()
