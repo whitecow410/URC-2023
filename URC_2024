@@ -8,11 +8,11 @@ class IRSensor:
         self.threshold = threshold
 
     def get_value(self) -> int:
-        return self.sensor.get_vlaue()
-    
+        return self.sensor.get_value()
+
     def set_threshold(self, threshold) -> None:
         self.threshold = threshold
-    
+
     def is_black(self) -> bool:
         value = self.get_value()
         return True if value < self.thresgold else False
@@ -24,7 +24,7 @@ class CarMotor:
 
     def set_power(self, power) -> None:
         self.power = power
-    
+
     def forward(self) -> None:
         self.motor.power(self.power)
         self.motor.cw()
@@ -150,4 +150,3 @@ def setup(threshold='auto'):
     display.clear()
 
 setup()
-move_forward()
