@@ -132,17 +132,15 @@ def setup(threshold='auto'):
         ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
     elif threshold == 'auto':
         temp += [ir_left.get_value(), ir_right.get_value()]
-        for ir in [ir_left, ir_right]:
-            if ir.is_black():
+        for index, ir in enumerate([ir_left, ir_right]):
+            if temp[index] - ir.get_value() <= 1000:
                 move_forward()
-                while not ir.is_black():
+                while temp[index] - ir.get_value() <= 1000:
                     pass
-                while ir.is_black():
-                    pass
-                stop()
+            stop()
             temp += [ir.get_value()]
-            ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
-            ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
+        ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
+        ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
     elif isinstance(threshold, list):
         ir_left.set_threshold(threshold[0])
         ir_right.set_threshold(threshold[1])
