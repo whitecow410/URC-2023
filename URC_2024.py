@@ -112,7 +112,7 @@ def pick(left=180, right=180):
     servo3.set_angle(right)
 
 
-def drop(left=0, right=0):
+def drop(left=60, right=60):
     servo2.set_angle(left)
     servo3.set_angle(right)
 
@@ -132,7 +132,7 @@ def fix(event=stop):
             break
 
 
-def forward_line(move, times):
+def forward_line(move=move_forward, times=1):
     move()
     for _ in range(times):
         while ir_left.is_black() or ir_right.is_black():
@@ -177,11 +177,11 @@ def setup(threshold='auto'):
             pass
         while not button_a.is_pressed():
             pass
-        if not ir_left.get_value() >= ir_left.threshold or not ir_right.get_value() >= ir_right.threshold:
-            move_forward()
-            while not ir_left.get_value() >= ir_left.threshold or not ir_right.get_value() >= ir_right.threshold:
-                pass
-            stop()
+        # if not ir_left.get_value() >= ir_left.threshold or not ir_right.get_value() >= ir_right.threshold:
+        #     move_forward()
+        #     while not ir_left.get_value() >= ir_left.threshold or not ir_right.get_value() >= ir_right.threshold:
+        #         pass
+        #     stop()
         temp += [ir_left.get_value(), ir_right.get_value()]
         for index, ir in enumerate([ir_left, ir_right]):
             if temp[index] - ir.get_value() <= 1000:
@@ -204,10 +204,49 @@ def setup(threshold='auto'):
     display.clear()
 
 
-pick(65, 65)
-# setup()
-# square()
-# forward_line(move_forward, 3)
-# move_forward()
-# time.sleep(1.5)
-# pick()
+setup()
+# Part 1
+forward_line(move_forward, 3)
+move_forward()
+time.sleep(1.5)
+pick()
+forward_line(move_backward, 2)
+drop()
+
+# Part 2
+forward_line(move_backward)
+move_forward()
+time.sleep(0.5)
+auto_right()
+forward_line()
+pick()
+set_hight(180)
+move_forward()
+time.sleep(0.5)
+auto_left()
+move_forward()
+while ir_center.get_value() <= 0:
+    move_forward()
+    fix()
+stop()
+for i in range(100, -1):
+    set_hight(i)
+    time.sleep(0.1)
+drop(160, 160)
+time.sleep(0.5)
+drop()
+set_hight(0)
+pick()
+time.sleep(0.5)
+set_hight(50)
+move_forward()
+time.sleep(0.5)
+auto_left()
+while ir_center.get_value() <= 0:
+    move_forward()
+    fix()
+stop()
+for i in range(50, -1):
+    set_hight(i)
+    time.sleep(0.1)
+drop()
