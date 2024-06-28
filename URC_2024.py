@@ -42,7 +42,7 @@ class CarMotor:
 class ServoMotor:
     def __init__(self, port) -> None:
         self.servo = Servomotor(port)
-        self.angle = 0
+        self.angle = 60
 
     def set_angle(self, angle) -> None:
         self.angle = angle
@@ -109,19 +109,20 @@ def auto_right():
     stop()
 
 
-def pick(L_start, r_start, l_end, r_end):
-    for i, r in zip(range(servo2.angle, targetAngle, 1 if servo2.angle < targetAngle else -1),
-                    range(servo3.angle, targetAngle, 1 if servo3.angle < targetAngle else -1)):
+def pick(angle, speed=None):
+    for i, r in zip(range(servo2.angle, angle, speed or (1 if servo2.angle < angle else -1)),
+                    range(servo3.angle, angle, speed or (1 if servo3.angle < angle else -1))):
         servo3.set_angle(r)
         servo2.set_angle(i)
     
-def drop(left=60, right=60):
-    servo2.set_angle(left)
-    servo3.set_angle(right)
+def drop(angle=60, speed=None):
+    for i, r in zip(range(servo2.angle, angle, speed or (-1 if servo2.angle > angle else 1)),
+                    range(servo3.angle, angle, speed or (-1 if servo3.angle > angle else 1))):
+        servo3.set_angle(r)
+        servo2.set_angle(i) 
 
-
-def set_hight(hight, speed=None):
-    for i in range(servo1.angle, speed or (hight, 1 if servo1.angle < hight else -1)):
+def set_hight(hight):
+    for i in range(servo1.angle, hight, 1 if servo1.angle < hight else -1):
         servo1.set_angle(hight)
 
 
@@ -196,7 +197,7 @@ def setup(threshold='auto'):
     elif isinstance(threshold, list):
         ir_left.set_threshold(threshold[0])
         ir_right.set_threshold(threshold[1])
-    servo1.set_angle(10)
+    servo1.set_angle(0)
     drop()
     display.show("G", delay=0)
     while not button_a.is_pressed():
@@ -205,20 +206,24 @@ def setup(threshold='auto'):
 
 setup()
 # Part 1
-pick(50, 50)
+pick(50)
 forward_line(move_forward, 3)
 move_forward()
-time.sleep(0.3)
+time.sleep(0.5)
 stop()
 time.sleep(0.5)
-pick([60, 90], [60, 90])
+pick(105)
 time.sleep(0.5)
-forward_line(move_backward, 2)
+forward_line(move_backward, 3)
+time.sleep(0.5)
+forward_line(move_forward)
+time.sleep(1.5)
+stop()
 time.sleep(0.5)
 drop()
+forward_line(move_backward)
 
 # # Part 2
-# forward_line(move_backward)
 # move_forward()
 # time.sleep(0.5)
 # auto_right()
@@ -263,4 +268,3 @@ drop()
 # set_hight(50)
 # time.sleep(0.5)
 # drop()
-
