@@ -20,7 +20,7 @@ class IRSensor:
 
 
 class CarMotor:
-    def __init__(self, port, power=100) -> None:
+    def __init__(self, port, power=150) -> None:
         self.motor = DCMotor(port)
         self.power = power
 
@@ -42,8 +42,10 @@ class CarMotor:
 class ServoMotor:
     def __init__(self, port) -> None:
         self.servo = Servomotor(port)
+        self.angle = 0
 
     def set_angle(self, angle) -> None:
+        self.angle = angle
         self.servo.set_angle(angle)
 
 
@@ -107,18 +109,20 @@ def auto_right():
     stop()
 
 
-def pick(left=180, right=180):
-    servo2.set_angle(left)
-    servo3.set_angle(right)
-
-
+def pick(L_start, r_start, l_end, r_end):
+    for i, r in zip(range(servo2.angle, targetAngle, 1 if servo2.angle < targetAngle else -1),
+                    range(servo3.angle, targetAngle, 1 if servo3.angle < targetAngle else -1)):
+        servo3.set_angle(r)
+        servo2.set_angle(i)
+    
 def drop(left=60, right=60):
     servo2.set_angle(left)
     servo3.set_angle(right)
 
 
-def set_hight(hight):
-    servo1.set_angle(hight)
+def set_hight(hight, speed=None):
+    for i in range(servo1.angle, speed or (hight, 1 if servo1.angle < hight else -1)):
+        servo1.set_angle(hight)
 
 
 def fix(event=stop):
@@ -128,22 +132,19 @@ def fix(event=stop):
         elif ir_right.is_black() and not ir_left.is_black():
             turn_right()
         else:
-            event()
             break
+    event()
 
-
-def forward_line(move=move_forward, times=1):
+def forward_line(move, times=1):
     move()
     for _ in range(times):
-        while ir_left.is_black() or ir_right.is_black():
+        while ir_left.is_black() and ir_right.is_black():
             pass
-        move()
         while True:
             if ir_left.is_black() and ir_right.is_black():
                 break
             else:
-                fix()
-                move()
+                fix(move)
     stop()
 
 
@@ -196,57 +197,70 @@ def setup(threshold='auto'):
         ir_left.set_threshold(threshold[0])
         ir_right.set_threshold(threshold[1])
     servo1.set_angle(10)
-    servo2.set_angle(0)
-    servo3.set_angle(0)
+    drop()
     display.show("G", delay=0)
     while not button_a.is_pressed():
         pass
     display.clear()
 
-
 setup()
 # Part 1
+pick(50, 50)
 forward_line(move_forward, 3)
 move_forward()
-time.sleep(1.5)
-pick()
+time.sleep(0.3)
+stop()
+time.sleep(0.5)
+pick([60, 90], [60, 90])
+time.sleep(0.5)
 forward_line(move_backward, 2)
+time.sleep(0.5)
 drop()
 
-# Part 2
-forward_line(move_backward)
-move_forward()
-time.sleep(0.5)
-auto_right()
-forward_line()
-pick()
-set_hight(180)
-move_forward()
-time.sleep(0.5)
-auto_left()
-move_forward()
-while ir_center.get_value() <= 0:
-    move_forward()
-    fix()
-stop()
-for i in range(100, -1):
-    set_hight(i)
-    time.sleep(0.1)
-drop(160, 160)
-time.sleep(0.5)
-drop()
-set_hight(0)
-pick()
-time.sleep(0.5)
-set_hight(50)
-move_forward()
-time.sleep(0.5)
-auto_left()
-while ir_center.get_value() <= 0:
-    move_forward()
-    fix()
-stop()
-for i in range(50, -1):
-    set_hight(i)
-    time.sleep(0.1)
-drop()
+# # Part 2
+# forward_line(move_backward)
+# move_forward()
+# time.sleep(0.5)
+# auto_right()
+# time.sleep(0.5)
+# forward_line(move_forward)
+# time.sleep(0.5)
+# pick([60, 90, 2], [60, 90, 2])
+# time.sleep(0.5)
+# set_hight(180)
+# time.sleep(0.5)
+# move_forward()
+# time.sleep(0.5)
+# auto_left()
+# time.sleep(0.5)
+# move_forward()
+# while ir_center.get_value() <= 590:
+#     move_forward()
+#     fix()
+# stop()
+# time.sleep(0.5)
+# for i in range(100, -1):
+#     set_hight(i)
+#     time.sleep(0.1)
+# drop(160, 160)
+# time.sleep(0.5)
+# drop()
+# time.sleep(0.5)
+# set_hight(0)
+# time.sleep(0.5)
+# pick()
+# time.sleep(0.5)
+# set_hight(50)
+# move_forward()
+# time.sleep(0.5)
+# auto_left()
+# time.sleep(0.5)
+# while ir_center.get_value() <= 490:
+#     move_forward()
+#     fix()
+# stop()
+# time.sleep(0.5)
+# set_hight(50)
+# time.sleep(0.5)
+# drop()
+
