@@ -114,12 +114,14 @@ def pick(angle, speed=None):
                     range(servo3.angle, angle, speed or (1 if servo3.angle < angle else -1))):
         servo3.set_angle(r)
         servo2.set_angle(i)
-    
+
+
 def drop(angle=60, speed=None):
     for i, r in zip(range(servo2.angle, angle, speed or (-1 if servo2.angle > angle else 1)),
                     range(servo3.angle, angle, speed or (-1 if servo3.angle > angle else 1))):
         servo3.set_angle(r)
-        servo2.set_angle(i) 
+        servo2.set_angle(i)
+
 
 def set_hight(hight):
     for i in range(servo1.angle, hight, 1 if servo1.angle < hight else -1):
@@ -135,6 +137,7 @@ def fix(event=stop):
         else:
             break
     event()
+
 
 def forward_line(move, times=1):
     move()
@@ -204,6 +207,7 @@ def setup(threshold='auto'):
         pass
     display.clear()
 
+
 setup()
 # Part 1
 pick(50)
@@ -217,54 +221,53 @@ time.sleep(0.5)
 forward_line(move_backward, 3)
 time.sleep(0.5)
 forward_line(move_forward)
-time.sleep(1.5)
+time.sleep(0.5)
 stop()
 time.sleep(0.5)
 drop()
 forward_line(move_backward)
 
-# # Part 2
-# move_forward()
-# time.sleep(0.5)
-# auto_right()
-# time.sleep(0.5)
-# forward_line(move_forward)
-# time.sleep(0.5)
-# pick([60, 90, 2], [60, 90, 2])
-# time.sleep(0.5)
-# set_hight(180)
-# time.sleep(0.5)
-# move_forward()
-# time.sleep(0.5)
-# auto_left()
-# time.sleep(0.5)
-# move_forward()
-# while ir_center.get_value() <= 590:
-#     move_forward()
-#     fix()
-# stop()
-# time.sleep(0.5)
-# for i in range(100, -1):
-#     set_hight(i)
-#     time.sleep(0.1)
-# drop(160, 160)
-# time.sleep(0.5)
-# drop()
-# time.sleep(0.5)
-# set_hight(0)
-# time.sleep(0.5)
-# pick()
-# time.sleep(0.5)
-# set_hight(50)
-# move_forward()
-# time.sleep(0.5)
-# auto_left()
-# time.sleep(0.5)
-# while ir_center.get_value() <= 490:
-#     move_forward()
-#     fix()
-# stop()
-# time.sleep(0.5)
-# set_hight(50)
-# time.sleep(0.5)
-# drop()
+# Part 2
+time.sleep(0.5)
+auto_right()
+time.sleep(0.5)
+forward_line(move_forward)
+time.sleep(0.5)
+pick([60, 90, 2], [60, 90, 2])
+time.sleep(0.5)
+set_hight(180)
+time.sleep(0.5)
+move_forward()
+time.sleep(0.5)
+auto_left()
+time.sleep(0.5)
+move_forward()
+while ir_center.get_value() <= 590:
+    move_forward()
+    fix()
+stop()
+time.sleep(0.5)
+for i in range(100, -1):
+    set_hight(i)
+    time.sleep(0.1)
+drop(160, 160)
+time.sleep(0.5)
+drop()
+time.sleep(0.5)
+set_hight(0)
+time.sleep(0.5)
+pick()
+time.sleep(0.5)
+set_hight(50)
+move_forward()
+time.sleep(0.5)
+auto_left()
+time.sleep(0.5)
+while ir_center.get_value() <= 490:
+    move_forward()
+    fix()
+stop()
+time.sleep(0.5)
+set_hight(50)
+time.sleep(0.5)
+drop()
