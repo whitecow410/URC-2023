@@ -374,7 +374,7 @@ stop()
 set_power(150)
 set_hight(130)
 time.sleep(0.5)
-for i in range(9):
+for i in range(8):
     move_forward()
     time.sleep(0.1)
 stop()
