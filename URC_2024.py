@@ -365,10 +365,10 @@ time.sleep(0.5)
 set_hight(130)
 time.sleep(0.5)
 turn_right()
-time.sleep(0.75)
+time.sleep(0.65)
 stop()
 time.sleep(0.5)
-for i in range(6):
+for i in range(8):
     move_forward()
     time.sleep(0.1)
 stop()
