@@ -368,7 +368,7 @@ turn_right()
 time.sleep(0.65)
 stop()
 time.sleep(0.5)
-for i in range(8):
+for i in range(10 ):
     move_forward()
     time.sleep(0.1)
 stop()
