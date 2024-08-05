@@ -136,7 +136,7 @@ def fix(event=stop):
         elif ir_right.is_black() and not ir_left.is_black():
             turn_left()
         else:
-            break  
+            break
     event()
 
 
@@ -164,44 +164,6 @@ def square():
 
 
 def setup(threshold='auto'):
-    temp = []
-    if not threshold:
-        for i in range(2):
-            while button_a.is_pressed():
-                pass
-            display.show("W" if i == 0 else "B", delay=0)
-            while not button_a.is_pressed():
-
-                pass
-            temp += [ir_left.get_value(), ir_right.get_value()]
-        while button_a.is_pressed():
-            pass
-        ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
-        ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
-    elif threshold == 'auto':
-        display.show("Auto", delay=0)
-        while button_a.is_pressed():
-            pass
-        while not button_a.is_pressed():
-            pass
-        # if not ir_left.get_value() >= ir_left.threshold or not ir_right.get_value() >= ir_right.threshold:
-        #     move_forward()
-        #     while not ir_left.get_value() >= ir_left.threshold or not ir_right.get_value() >= ir_right.threshold:
-        #         pass
-        #     stop()
-        temp += [ir_left.get_value(), ir_right.get_value()]
-        for index, ir in enumerate([ir_left, ir_right]):
-            if temp[index] - ir.get_value() <= 1000:
-                move_forward()
-                while temp[index] - ir.get_value() <= 1000:
-                    pass
-            stop()
-            temp += [ir.get_value()]
-        ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
-        ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
-    elif isinstance(threshold, list):
-        ir_left.set_threshold(threshold[0])
-        ir_right.set_threshold(threshold[1])
     display.show("G", delay=0)
     while not button_a.is_pressed():
         pass
@@ -213,7 +175,24 @@ def setup(threshold='auto'):
 setup()
 # Part 1
 pick(55)
-forward_line(move_forward, 3)
+temp = []
+if threshold == 'auto':
+    display.show("Auto", delay=0)
+    temp += [ir_left.get_value(), ir_right.get_value()]
+    for index, ir in enumerate([ir_left, ir_right]):
+        if temp[index] - ir.get_value() <= 1000:
+            move_forward()
+            while temp[index] - ir.get_value() <= 1000:
+                pass
+        stop()
+        temp += [ir.get_value()]
+    ir_left.set_threshold(int((temp[0] + temp[2]) / 2))
+    ir_right.set_threshold(int((temp[1] + temp[3]) / 2))
+    display.clear()
+else:
+    forward_line(move_forward, 1)
+
+forward_line(move_forward, 2)
 move_forward()
 time.sleep(0.5)
 stop()
@@ -222,7 +201,7 @@ pick(100, 0.05)
 time.sleep(0.5)
 forward_line(move_backward, 2)
 move_backward()
-time.sleep(0.46)
+time.sleep(0.53)
 stop()
 drop()
 
@@ -242,14 +221,43 @@ move_forward()
 time.sleep(0.5)
 auto_left()
 set_power(100)
-forward_line(move_forward, 2)
-set_power(100)
+forward_line(move_forward, 1)
+
+# >>>
+while ir_center.get_value() >= 380:
+    move_backward()
+    fix()
+time.sleep(0.5)
+pick(115, 0.05)
+set_power(80)
+time.sleep(0.5)
+set_hight(135)
+time.sleep(0.5)
+
+
+# move_forward()
+# time.sleep(0.3)
+while ir_center.get_value() <= 380:
+    move_forward()
+    fix()
+time.sleep(0.5)
+
+# >>>
+set_hight(125)
+time.sleep(0.5)
+pick(100, 0.05)
+time.sleep(0.5)
+drop()
+set_hight(0)
+time.sleep(0.5)
+forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
 while ir_center.get_value() >= 380:
     move_backward()
     fix()
 time.sleep(0.5)
+
 pick(100, 0.05)
 set_power(80)
 time.sleep(0.5)
@@ -290,7 +298,7 @@ time.sleep(1.5)
 stop()
 time.sleep(0.5)
 pick(0)
-for i in range(7):
+for i in range(9):
     move_forward()
     time.sleep(0.1)
 stop()
@@ -323,14 +331,43 @@ while not  ir_left.is_black() or not ir_right.is_black():
 move_forward()
 time.sleep(0.5)
 auto_right ()
-forward_line(move_forward, 2)
+forward_line(move_forward, 1)
+
 # >>>
-move_forward()
-time.sleep(0.3) 
 while ir_center.get_value() >= 380:
     move_backward()
     fix()
 time.sleep(0.5)
+pick(115, 0.05)
+set_power(80)
+time.sleep(0.5)
+set_hight(135)
+time.sleep(0.5)
+
+
+# move_forward()
+# time.sleep(0.3)
+while ir_center.get_value() <= 380:
+    move_forward()
+    fix()
+time.sleep(0.5)
+
+# >>>
+set_hight(125)
+time.sleep(0.5)
+pick(100, 0.05)
+time.sleep(0.5)
+drop()
+set_hight(0)
+time.sleep()
+forward_line(move_forward, 1)
+move_forward()
+time.sleep(0.3)
+while ir_center.get_value() >= 380:
+    move_backward()
+    fix()
+time.sleep(0.5)
+
 pick(100, 0.05)
 time.sleep(0.5)
 set_hight(95)
@@ -352,7 +389,7 @@ time.sleep(0.5)
 move_backward()
 time.sleep(0.35)
 stop()
-time.sleep(0.5)  
+time.sleep(0.5)
 pick(100, 0.05)
 time.sleep(0.3)
 move_backward()
@@ -360,7 +397,7 @@ time.sleep(0.5)
 forward_line(move_backward)
 move_backward()
 time.sleep(0.5)
-set_hight(130)
+set_hight(135)
 time.sleep(0.5)
 turn_right()
 time.sleep(0.80)
