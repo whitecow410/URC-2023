@@ -258,7 +258,7 @@ time.sleep(0.5)
 
 # move_forward()
 # time.sleep(0.3)
-while ir_center.get_value() <= 300:
+while ir_center.get_value() <= 310:
     move_forward()
     fix()
 time.sleep(0.5)
@@ -389,7 +389,7 @@ time.sleep(0.5)
 
 # move_forward()
 # time.sleep(0.3)
-while ir_center.get_value() <= 300:
+while ir_center.get_value() <= 320:
     move_forward()
     fix()
 time.sleep(0.5)
