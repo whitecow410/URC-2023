@@ -280,7 +280,7 @@ time.sleep(0.5)
 forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
-while ir_center.get_value() >= 380:
+while ir_center.get_value() >= 430:
     move_backward()
     fix()
 time.sleep(0.5)
@@ -411,13 +411,13 @@ time.sleep(0.5)
 forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
-while ir_center.get_value() >= 380:
+while ir_center.get_value() >= 430:
     move_backward()
     fix()
 time.sleep(0.5)
 
 
-pick(100, 0.05)
+pick(100, 0.05) 
 time.sleep(0.5)
 set_hight(135) ### 95
 time.sleep(0.5)
