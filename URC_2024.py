@@ -222,7 +222,7 @@ pick(100, 0.05)
 time.sleep(0.5)
 forward_line(move_backward, 2)
 move_backward()
-time.sleep(0.55 )
+time.sleep(0.55)
 stop()
 drop()
 
@@ -241,11 +241,11 @@ while not ir_left.is_black() or not ir_right.is_black():
 move_forward()
 time.sleep(0.5)
 auto_left()
-set_power(100)
+set_power(90)
 forward_line(move_forward, 1)
 
 # >>>
-while ir_center.get_value() >= 380:
+while ir_center.get_value() >= 439:
     move_backward()
     fix()
 time.sleep(0.5)
@@ -258,7 +258,7 @@ time.sleep(0.5)
 
 # move_forward()
 # time.sleep(0.3)
-while ir_center.get_value() <= 310:
+while ir_center.get_value() <= 430: 
     move_forward()
     fix()
 time.sleep(0.5)
@@ -270,7 +270,7 @@ stop()
 time.sleep(0.5)
 
 set_hight(115)
-time.sleep(0.5)
+time.sleep(0.5) 
 pick(95)
 time.sleep(0.5)
 drop()
@@ -280,17 +280,16 @@ time.sleep(0.5)
 forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
-while ir_center.get_value() >= 390:
+while ir_center.get_value() >= 380:
     move_backward()
     fix()
 time.sleep(0.5)
 
 pick(100, 0.05)
-set_power(80)
 time.sleep(0.5)
 set_hight(135) ### 85
 time.sleep(0.5)
-while ir_center.get_value() <= 340:
+while ir_center.get_value() <= 360:
     move_forward()
     fix()
 time.sleep(0.5)
@@ -311,10 +310,10 @@ drop()
 time.sleep(0.5)
 
 set_hight(0)
-set_power(75)
+set_power(80)
 time.sleep(0.5)
 forward_line(move_forward)
-set_power(100)
+set_power(90)
 time.sleep(0.5)
 move_backward()
 time.sleep(0.35)
@@ -335,7 +334,7 @@ turn_left()
 #time.sleep(1.59)
 auto_left()
 turn_left()
-time.sleep(0.9)
+time.sleep(0.7)
 
 stop()
 time.sleep(0.5)
@@ -355,14 +354,14 @@ move_forward()
 time.sleep(0.5)
 auto_left()
 forward_line(move_forward)
-set_power(100)
+set_power(150)
 set_hight(0)
 drop()
 time.sleep(0.5)
 move_forward()
-time.sleep(3.5)
+time.sleep(1.5)
 turn_right()
-time.sleep(1)
+time.sleep(0.5)
 move_forward()
 time.sleep(0.5)
 while not ir_left.is_black() or not ir_right.is_black():
@@ -374,13 +373,14 @@ move_forward()
 time.sleep(0.5)
 auto_right ()
 forward_line(move_forward, 1)
+set_power(90)
 
 # >>>
-while ir_center.get_value() >= 380:
+while ir_center.get_value() >= 439:
     move_backward()
     fix()
-time.sleep(0.5)
-pick(110 , 0.05)
+time.sleep(0.5) 
+pick(110, 0.05)
 set_power(80)
 time.sleep(0.5)
 set_hight(135)
@@ -389,7 +389,7 @@ time.sleep(0.5)
 
 # move_forward()
 # time.sleep(0.3)
-while ir_center.get_value() <= 320:
+while ir_center.get_value() <= 430:
     move_forward()
     fix()
 time.sleep(0.5)
@@ -411,7 +411,7 @@ time.sleep(0.5)
 forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
-while ir_center.get_value() >= 390:
+while ir_center.get_value() >= 380:
     move_backward()
     fix()
 time.sleep(0.5)
@@ -421,7 +421,7 @@ pick(100, 0.05)
 time.sleep(0.5)
 set_hight(135) ### 95
 time.sleep(0.5)
-while ir_center.get_value() <= 340:
+while ir_center.get_value() <= 360:
     move_forward()
     fix()
 time.sleep(0.5)
