@@ -245,23 +245,22 @@ set_power(90)
 forward_line(move_forward, 1)
 
 # >>>
-while ir_center.get_value() >= 439:
-    move_backward()
-    fix()
+# while ir_center.get_value() >= 380:
+    # move_backward()
+    # fix()
+move_backward()
+
 time.sleep(0.5)
+stop()
 pick(110, 0.05)
-set_power(80)
 time.sleep(0.5)
 set_hight(135)
 time.sleep(0.5)
+set_power(100)
 
-
-# move_forward()
-# time.sleep(0.3)
-while ir_center.get_value() <= 430: 
+while ir_center.get_value() < 270:
     move_forward()
     fix()
-time.sleep(0.5)
 
 # >>>
 turn_left()
@@ -276,20 +275,19 @@ time.sleep(0.5)
 drop()
 time.sleep(0.5)
 set_hight(0)
-time.sleep(0.5)
+time.sleep(0.5)  
 forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
-while ir_center.get_value() >= 430:
-    move_backward()
-    fix()
+move_backward()
 time.sleep(0.5)
-
+stop()
+time.sleep(0.5)
 pick(100, 0.05)
 time.sleep(0.5)
 set_hight(135) ### 85
 time.sleep(0.5)
-while ir_center.get_value() <= 360:
+while ir_center.get_value() < 280:
     move_forward()
     fix()
 time.sleep(0.5)
@@ -334,7 +332,7 @@ turn_left()
 #time.sleep(1.59)
 auto_left()
 turn_left()
-time.sleep(0.7)
+time.sleep(0.72)
 
 stop()
 time.sleep(0.5)
@@ -376,20 +374,23 @@ forward_line(move_forward, 1)
 set_power(90)
 
 # >>>
-while ir_center.get_value() >= 439:
-    move_backward()
-    fix()
+# while ir_center.get_value() >= 380:
+    # move_backward()
+    # fix()
+
+move_backward()
+time.sleep(0.5)
+stop()
 time.sleep(0.5) 
 pick(110, 0.05)
-set_power(80)
-time.sleep(0.5)
+set_power(80)    
 set_hight(135)
 time.sleep(0.5)
 
 
 # move_forward()
 # time.sleep(0.3)
-while ir_center.get_value() <= 430:
+while ir_center.get_value() <= 380:
     move_forward()
     fix()
 time.sleep(0.5)
@@ -411,7 +412,7 @@ time.sleep(0.5)
 forward_line(move_forward, 1)
 move_forward()
 time.sleep(0.3)
-while ir_center.get_value() >= 430:
+while ir_center.get_value() >= 380:
     move_backward()
     fix()
 time.sleep(0.5)
@@ -421,7 +422,7 @@ pick(100, 0.05)
 time.sleep(0.5)
 set_hight(135) ### 95
 time.sleep(0.5)
-while ir_center.get_value() <= 360:
+while ir_center.get_value() <= 340:
     move_forward()
     fix()
 time.sleep(0.5)
