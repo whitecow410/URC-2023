@@ -423,12 +423,14 @@ pick(100, 0.05)
 time.sleep(0.5)
 set_hight(135) ### 85
 time.sleep(0.5)
-while ir_center.get_value() < 320:
+while ir_center.get_value() < 300:
     move_forward()
     fix()
 time.sleep(0.6)
 set_hight(115) ###76
 time.sleep(0.5) 
+turn_right()
+time.sleep(0.1)
 drop()
 time.sleep(0.5)
 
