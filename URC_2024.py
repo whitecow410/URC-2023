@@ -257,6 +257,8 @@ time.sleep(0.5)
 set_hight(135)
 time.sleep(0.5)
 set_power(100)
+move_forwer()
+time.sleep(1)
 
 while ir_center.get_value() < 270:
     move_forward()
