@@ -117,11 +117,13 @@ def pick(angle, sleep=None):
         if sleep:
             time.sleep(sleep)
 
-def drop(angle=60):
+def drop(angle=60, sleep=None):
     for i, r in zip(range(servo2.angle, angle, -1 if servo2.angle > angle else 1),
                     range(servo3.angle, angle, -1 if servo3.angle > angle else 1)):
         servo3.set_angle(r)
         servo2.set_angle(i)
+        if sleep:
+            time.sleep(sleep)
 
 def set_hight(hight, sleep=None):
     for i in range(servo1.angle, hight, 1 if servo1.angle < hight else -1):
@@ -212,7 +214,7 @@ def setup(threshold='auto'):
 
 setup()
 # Part 1
-pick(55)
+pick(55, 0.02)
 forward_line(move_forward, 2)
 time.sleep(0.5)
 forward_line(move_forward, 1)
@@ -300,12 +302,10 @@ stop()
 
 time.sleep(0.6)
 set_hight(115) ###76
-time.sleep(0.5) 
+time.sleep(0.5)
 drop()
 time.sleep(0.5)
 
-turn_right()
-time.sleep(0.07)
 stop()
 time.sleep(0.5)
 set_hight(40)
@@ -341,12 +341,17 @@ turn_left()
 #time.sleep(1.59)
 auto_left()
 turn_left()
-time.sleep(0.75)
-
+time.sleep(0.7)
 stop()
+
+time.sleep(0.5)
+turn_left()
+time.sleep(0.05)
+stop()
+
 time.sleep(0.5)
 pick(0)
-for i in range(15):
+for i in range(16):
     move_forward()
     time.sleep(0.05)
 stop()
@@ -355,15 +360,12 @@ time.sleep(0.5)
 forward_line(move_backward)
 
 #part 3
-set_hight(130)
-time.sleep(0.5)
+drop()
 move_forward()
 time.sleep(0.5)
 auto_left()
 forward_line(move_forward)
 set_power(150)
-set_hight(0)
-drop()
 time.sleep(0.5)
 move_forward()
 time.sleep(1.5)
@@ -428,28 +430,27 @@ pick(100, 0.05)
 time.sleep(0.5)
 set_hight(135) ### 85
 time.sleep(0.5)
-while ir_center.get_value() < 350:
+while ir_center.get_value() < 340:
     move_forward()
     fix()
 
 time.sleep(0.6)
-set_hight(115) ###76
-time.sleep(0.5) 
 turn_left()
-time.sleep(0.03)
+time.sleep(0.07  )
 stop()
-drop()
+set_hight(115) ###76
+time.sleep(0.5)
+stop()
+drop(sleep=0.02)
 time.sleep(0.5)
 
-turn_right()
-time.sleep(0.07)
 stop()
 time.sleep(0.5)
 set_hight(40)
 time.sleep(0.5)
-pick(100, 0.01)
+pick(100, 0.02)
 time.sleep(0.5)
-drop()
+drop(sleep=0.02)
 time.sleep(0.5)
 
 set_hight(0)
@@ -466,14 +467,14 @@ pick(100, 0.05)
     
 time.sleep(0.3)
 move_backward()
-time.sleep(0.5)
+time.sleep(0.5) 
 forward_line(move_backward)
 move_backward()
 time.sleep(0.5)
 set_hight(135)
 time.sleep(0.5)
 turn_right()
-time.sleep(1.1)
+time.sleep(1.25)
 stop()
 time.sleep(0.5)
 for i in range(11):
