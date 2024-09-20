@@ -351,7 +351,8 @@ stop()
 
 time.sleep(0.5)
 pick(0)
-for i in range(16):
+set_power(78)
+for i in range(17):
     move_forward()
     time.sleep(0.05)
 stop()
@@ -370,7 +371,7 @@ time.sleep(0.5)
 move_forward()
 time.sleep(1.5)
 turn_right()
-time.sleep(0.5)
+time.sleep(0.55)
 move_forward()
 time.sleep(0.5)
 while not ir_left.is_black() or not ir_right.is_black():
@@ -379,14 +380,14 @@ time.sleep(0.5)
 while not  ir_left.is_black() or not ir_right.is_black():
     pass
 move_forward()
-time.sleep(0.5)
+time.sleep(0.3)
 stop()
 set_power(90)
 time.sleep(0.5)
 auto_right ()
 forward_line(move_forward, 2)
 move_forward()
-time.sleep(0.5)
+time.sleep(0.8)
 
 # >>>
 # while ir_center.get_value() >= 380:
@@ -403,7 +404,7 @@ set_hight(135)
 time.sleep(0.5)
 set_power(90)
 move_forward()
-time.sleep(0.5)
+time.sleep(0.4)
 stop()
 
 # >>>
@@ -422,7 +423,7 @@ set_hight(0)
 time.sleep(0.5)  
 
 move_forward()
-time.sleep(0.18)
+time.sleep(0.16)
 stop()
 
 time.sleep(0.5)
@@ -436,7 +437,7 @@ while ir_center.get_value() < 340:
 
 time.sleep(0.6)
 turn_left()
-time.sleep(0.07  )
+time.sleep(0.1)
 stop()
 set_hight(115) ###76
 time.sleep(0.5)
@@ -460,7 +461,7 @@ forward_line(move_forward)
 set_power(90)
 time.sleep(0.5)
 move_backward()
-time.sleep(0.45)
+time.sleep(0.35)
 stop()
 time.sleep(0.5)
 pick(100, 0.05)    
